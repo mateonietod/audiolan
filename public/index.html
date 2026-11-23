@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070708">
+  <meta name="robots" content="noindex">
+  <title>audiolan</title>
+  <meta name="description" content="Voice for this network. Push-to-talk or open mic, browser to browser.">
+  <meta name="application-name" content="audiolan">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="audiolan">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="preload" href="/fonts/GeistSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body>
+  <section id="join" class="screen join" aria-labelledby="join-title">
+    <div class="card">
+      <p class="mark">audiolan</p>
+      <h1 id="join-title">Voice for this network.</h1>
+      <p id="lede" class="lede" aria-live="polite">Looking for a room on this network…</p>
+      <p id="on-call" class="on-call" aria-live="polite" hidden><span class="on-call-dot" aria-hidden="true"></span><span id="on-call-label">On the call now</span> <strong id="on-call-names"></strong></p>
+      <form id="join-form" class="fields">
+        <label>
+          <span>Name</span>
+          <input id="name" name="name" maxlength="32" autocomplete="nickname" placeholder="Kitchen" required>
+        </label>
+
+        <div class="mic-check">
+          <div class="mic-row">
+            <button id="mic-test" class="secondary" type="button">Test microphone</button>
+            <div id="test-level" class="test-level" aria-hidden="true" hidden><span></span></div>
+          </div>
+          <p id="mic-hint" class="hint">Check your mic and choose devices before you join.</p>
+        </div>
+
+        <div id="join-devices" class="join-devices" hidden>
+          <label class="device">
+            <span>Microphone</span>
+            <select data-device="input"></select>
+          </label>
+          <label class="device">
+            <span>Speaker</span>
+            <select data-device="output"></select>
+          </label>
+        </div>
+
+        <button id="join-button" class="primary" type="submit">Join</button>
+        <p id="join-error" class="error" role="alert" hidden></p>
+      </form>
+      <details id="elsewhere" class="elsewhere">
+        <summary>Another address</summary>
+        <label>
+          <span>Host</span>
+          <input id="host" name="host" form="join-form" spellcheck="false" autocapitalize="off" autocomplete="off" placeholder="192.168.1.20:8787">
+        </label>
+      </details>
+      <div id="share" class="share" hidden></div>
+      <section class="about" aria-labelledby="about-title">
+        <h2 id="about-title">A voice intercom in your browser</h2>
+        <p id="about-lead">Open this page on two devices, enter a name on each, and talk. It works on phones, tablets and computers, with no app to install and no account.</p>
+        <ul>
+          <li>Push-to-talk or open mic, with a live level meter.</li>
+          <li>Audio goes straight between devices, not through a server.</li>
+          <li>Add it to your home screen and it opens like an app.</li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <section id="room" class="screen room" aria-labelledby="room-title" hidden>
+    <header class="top">
+      <h1 id="room-title" class="visually-hidden">On the line</h1>
+      <p class="mark" aria-hidden="true">audiolan</p>
+      <p id="count" class="count" role="status">Connecting</p>
+      <button id="leave" class="ghost" type="button">Leave</button>
+    </header>
+    <main class="stage">
+      <div class="stage-inner">
+        <div id="peers" class="peers" role="list" aria-label="People on the line"></div>
+        <p id="alone" class="alone" hidden>Waiting for someone else on this network.</p>
+      </div>
+    </main>
+    <div class="dock" id="dock">
+      <button id="talk" class="talk" type="button" hidden>
+        <span class="talk-fine">Talk</span><span class="talk-coarse">Hold to talk</span>
+        <kbd id="talk-key">Space</kbd>
+      </button>
+      <button id="mute" class="mute" type="button" title="Mute (M)">
+        <svg class="icon-on" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <rect x="9" y="3" width="6" height="11" rx="3"></rect>
+          <path d="M6 11a6 6 0 0 0 12 0"></path>
+          <path d="M12 17v3"></path>
+        </svg>
+        <svg class="icon-off" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <path d="M9 9v2a3 3 0 0 0 5.1 2.1"></path>
+          <path d="M15 10V6a3 3 0 0 0-5.5-1.6"></path>
+          <path d="M6 11a6 6 0 0 0 9.3 5"></path>
+          <path d="M12 17v3"></path>
+          <path d="M4 4l16 16"></path>
+        </svg>
+        <span id="mute-label">Mute</span>
+      </button>
+      <div class="segment" role="group" aria-label="Microphone mode">
+        <button id="mode-open" type="button" aria-pressed="true" title="Send whenever unmuted">Open</button>
+        <button id="mode-ptt" type="button" aria-pressed="false" title="Push to talk">Hold</button>
+      </div>
+      <div id="meter" class="meter" aria-hidden="true"></div>
+      <button id="bind" class="bind" type="button" hidden>Change key</button>
+      <span id="flag" class="flag"><i aria-hidden="true"></i><span id="flag-label">Live</span></span>
+      <button id="audio-menu" class="kebab" type="button" popovertarget="audio-panel" aria-haspopup="true" aria-expanded="false" aria-controls="audio-panel" title="Audio devices">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+          <circle cx="12" cy="5" r="1.45" fill="currentColor"></circle>
+          <circle cx="12" cy="12" r="1.45" fill="currentColor"></circle>
+          <circle cx="12" cy="19" r="1.45" fill="currentColor"></circle>
+        </svg>
+        <span class="visually-hidden">Audio devices</span>
+      </button>
+      <div id="audio-panel" class="audio-panel" popover hidden aria-label="Audio devices">
+        <label class="device">
+          <span>Microphone</span>
+          <select data-device="input"></select>
+        </label>
+        <label class="device">
+          <span>Speaker</span>
+          <select data-device="output"></select>
+        </label>
+        <p id="device-error" class="device-error" role="alert" hidden></p>
+      </div>
+    </div>
+  </section>
+
+  <div id="sink" class="sink"></div>
+</body>
+</html>

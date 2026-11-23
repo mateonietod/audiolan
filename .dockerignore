@@ -1,0 +1,10 @@
+.git
+.certs
+node_modules
+test
+scripts
+*.md
+.nvmrc
+tsconfig.json
+Dockerfile
+compose.yaml

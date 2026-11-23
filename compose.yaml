@@ -1,0 +1,23 @@
+# docker compose up -d
+#
+# Linux only (a Raspberry Pi, a NAS, a home server). Host networking is what
+# lets mDNS reach the LAN; Docker Desktop on macOS and Windows cannot do that.
+services:
+  audiolan:
+    build: .
+    image: audiolan
+    restart: unless-stopped
+    network_mode: host
+    init: true
+    environment:
+      PORT: "8787"
+      # The same secret on every computer that runs audiolan. At least 16
+      # characters: openssl rand -base64 18
+      # AUDIOLAN_SECRET: ""
+      # Other networks allowed to connect, e.g. a second subnet or Tailscale.
+      # AUDIOLAN_ALLOW: "10.0.0.0/8,100.64.0.0/10"
+    volumes:
+      - certs:/data/certs
+
+volumes:
+  certs:
